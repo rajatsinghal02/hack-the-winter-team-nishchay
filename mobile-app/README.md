@@ -1,280 +1,153 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Jaltejas Mobile App – Documentation</title>
+# 📱 Jaltejas – Mobile Application (Flutter)
 
-<style>
-body {
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  margin: 0;
-  background: #0b1220;
-  color: #e5e7eb;
-  line-height: 1.6;
-}
+The **Jaltejas Mobile App** is the primary control interface for the Jaltejas Underwater ROV.  
+It allows pilots to authenticate securely, create and manage missions, monitor live telemetry, view video streams, and store mission data using **Firebase**.
 
-header {
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-  padding: 50px 20px;
-  text-align: center;
-}
+---
 
-header h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
-}
+## 🚀 Key Features
 
-header p {
-  max-width: 900px;
-  margin: auto;
-  font-size: 1.2rem;
-}
+- Secure Pilot Authentication
+- Mission creation and tracking
+- Live video streaming from the ROV
+- Depth, heading, and battery telemetry
+- AI-based underwater object alerts
+- Firebase-powered mission logging
 
-section {
-  padding: 50px 10%;
-}
+---
 
-h2 {
-  color: #38bdf8;
-  margin-bottom: 15px;
-  font-size: 2rem;
-}
+## 🛠️ Tech Stack
 
-h3 {
-  color: #a5f3fc;
-  margin-top: 30px;
-}
+- **Framework:** Flutter  
+- **Backend:** Firebase (Authentication + Firestore)  
+- **Database:** Firestore  
+- **Communication:** MAVLink / UDP  
+- **Platform:** Android & iOS  
 
-.card {
-  background: #111827;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 25px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-}
+---
 
-ul {
-  padding-left: 20px;
-}
+## 📸 App UI Screenshots
 
-.badge {
-  display: inline-block;
-  background: #1e40af;
-  padding: 6px 12px;
-  border-radius: 20px;
-  margin: 5px;
-  font-size: 0.9rem;
-}
+### Screens (Preview)
 
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-}
+| | |
+|---|---|
+| ![](ui-screenshot/1.png) | ![](ui-screenshot/2.png) |
+| ![](ui-screenshot/3.png) | ![](ui-screenshot/4.png) |
+| ![](ui-screenshot/5.png) | ![](ui-screenshot/6.png) |
+| ![](ui-screenshot/7.png) | ![](ui-screenshot/8.png) |
 
-.gallery img {
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-}
+> All screenshots are stored in `mobile-app/ui-screenshot/`
 
-.code {
-  background: #020617;
-  padding: 15px;
-  border-radius: 8px;
-  overflow-x: auto;
-  font-family: monospace;
-  font-size: 0.9rem;
-}
+---
 
-.diagram {
-  background: #020617;
-  padding: 20px;
-  border-radius: 12px;
-  font-family: monospace;
-  white-space: pre-wrap;
-}
+## 🧱 Application Architecture
+```mermaid
+flowchart TB
 
-footer {
-  text-align: center;
-  padding: 30px;
-  background: #020617;
-  color: #94a3b8;
-}
+%% User Layer
+User[👤 Pilot / Operator]
 
-.feature-list {
-  list-style: none;
-  padding-left: 0;
-}
+%% Mobile App
+MobileApp[📱 Flutter Mobile App]
 
-.feature-list li::before {
-  content: "✔";
-  color: #38bdf8;
-  margin-right: 10px;
-}
+Auth[🔐 Authentication Module]
+MissionUI[🧭 Mission Management UI]
+TelemetryUI[📊 Telemetry Dashboard]
+VideoUI[🎥 Live Video Viewer]
+AIAlertUI[🤖 AI Alerts]
 
-.feature-list li {
-  margin-bottom: 10px;
-}
+%% Firebase
+FirebaseAuth[🔥 Firebase Authentication]
+Firestore[🗄️ Firestore Database]
+
+Pilots[(Pilots Collection)]
+Missions[(Missions Collection)]
+
+%% ROV Side
+ROV[🤿 Underwater ROV]
+
+Companion[🖥️ Raspberry Pi<br/>Companion Computer]
+FlightCtrl[🧠 Pixhawk / ArduSub]
+Camera[📷 ROV Camera]
+
+%% AI/ML
+MLModel[🧠 YOLOv8 AI Model]
+
+%% Connections
+User --> MobileApp
+
+MobileApp --> Auth
+MobileApp --> MissionUI
+MobileApp --> TelemetryUI
+MobileApp --> VideoUI
+MobileApp --> AIAlertUI
+
+Auth --> FirebaseAuth
+MissionUI --> Firestore
+TelemetryUI --> Firestore
+
+Firestore --> Pilots
+Firestore --> Missions
+
+MobileApp -->|MAVLink / Commands| Companion
+MobileApp -->|UDP Video| Camera
+
+Companion --> FlightCtrl
+Camera --> Companion
+
+Companion -->|Video Frames| MLModel
+MLModel -->|Detection Events| MobileApp
+```
+---
+
+## 🗄️ Firebase Database Design
+
+### 📌 Collection: `pilots`
+
+| Field Name   | Type    | Description |
+|-------------|---------|-------------|
+| pilotId     | string  | Unique pilot identifier |
+| Name        | string  | Pilot full name |
+| Phone       | number  | Pilot phone number |
+| passcode    | number  | Login passcode |
+| max_depth   | string  | Maximum depth reached |
+| total_time  | string  | Total operation time |
 
 
-</style>
-</head>
+---
 
-<body>
+### 📌 Collection: `missions`
 
-<header>
-  <h1>📱 Jaltejas Mobile Application</h1>
-  <p>
-    The official Flutter-based control application for the Jaltejas Underwater ROV.
-    It enables secure authentication, real-time ROV control, mission planning,
-    telemetry visualization, AI alerts, and Firebase-powered data storage.
-  </p>
-</header>
+| Field Name    | Type      | Description |
+|--------------|-----------|-------------|
+| mission_id   | string    | Mission ID |
+| mission_name | string    | Mission name |
+| pilotId      | string    | Linked pilot |
+| location     | string    | Mission location |
+| depth        | string    | Depth reached |
+| duration     | string    | Mission duration |
+| status       | string    | Mission status |
+| imageUrl     | string    | Mission image |
+| date         | timestamp | Mission date |
 
-<section>
-  <h2>🚀 Key Features</h2>
-  <div class="card">
-    <span class="badge">Flutter</span>
-    <span class="badge">Firebase</span>
-    <span class="badge">ROV Control</span>
-    <span class="badge">AI Alerts</span>
-    <span class="badge">Live Video</span>
 
-  <ul class="feature-list">
-  <li>Secure Pilot Authentication</li>
-  <li>Mission creation & tracking</li>
-  <li>Live video streaming from ROV</li>
-  <li>Depth, heading & battery telemetry</li>
-  <li>AI-based underwater object alerts</li>
-</ul>
 
-  </div>
-</section>
+---
 
-<section>
-  <h2>📸 App UI Screenshots</h2>
-  <div class="gallery">
-    <img src="ui-screenshot/1.png" alt="Screenshot 1"/>
-    <img src="ui-screenshot/2.png" alt="Screenshot 2"/>
-    <img src="ui-screenshot/3.png" alt="Screenshot 3"/>
-    <img src="ui-screenshot/4.png" alt="Screenshot 4"/>
-    <img src="ui-screenshot/5.png" alt="Screenshot 5"/>
-    <img src="ui-screenshot/6.png" alt="Screenshot 6"/>
-    <img src="ui-screenshot/7.png" alt="Screenshot 7"/>
-    <img src="ui-screenshot/8.png" alt="Screenshot 8"/>
-  </div>
-</section>
+## ⚙️ How to Run the Application
 
-<section>
-  <h2>🧱 Application Architecture</h2>
-  <div class="diagram">
-Flutter UI
-   ↓
-State Management
-   ↓
-Firebase Auth & Firestore
-   ↓
-ROV Communication (MAVLink / UDP)
-   ↓
-AI Detection Alerts
-  </div>
-</section>
+### 1️⃣ Prerequisites
+- Flutter SDK (stable)
+- Android Studio / Xcode
+- Android Emulator or Physical Device
 
-<section>
-  <h2>🔄 Application Flowchart</h2>
-  <div class="diagram">
-App Launch
-   ↓
-Pilot Login / Signup
-   ↓
-Dashboard
-   ├── Live Video
-   ├── Telemetry
-   ├── Create Mission
-   └── Mission History
-   ↓
-Firebase Sync
-  </div>
-</section>
-
-<section>
-  <h2>🗄️ Firebase Database Design</h2>
-
-  <h3>📌 Collection: Pilots</h3>
-  <div class="code">
-pilotId: "Rajat" (string)
-Name: "Rajat Singhal" (string)
-Phone: 9760197197 (number)
-passcode: 6179 (number)
-max_depth: "30.5 m" (string)
-total_time: "10h 20m" (string)
-  </div>
-
-  <h3>📌 Collection: Missions</h3>
-  <div class="code">
-mission_id: "Mission01" (string)
-mission_name: "My Mission" (string)
-pilotId: "Rajat" (string)
-location: "Pacific" (string)
-depth: "12.5" (string)
-duration: "40m 20s" (string)
-status: "COMPLETE" (string)
-imageUrl: "https://picsum.photos/seed/rov1/400/200" (string)
-date: January 20, 2026 at 1:33:24 AM (timestamp)
-  </div>
-</section>
-
-<section>
-  <h2>🧩 ER Diagram</h2>
-  <div class="diagram">
-PILOTS ||----o{ MISSIONS
-
-PILOTS:
-- pilotId (PK)
-- Name
-- Phone
-- max_depth
-- total_time
-
-MISSIONS:
-- mission_id (PK)
-- pilotId (FK)
-- depth
-- duration
-- location
-- status
-- date
-  </div>
-</section>
-
-<section>
-  <h2>⚙️ How to Run the App</h2>
-  <div class="card">
-    <div class="code">
+Check setup:
+```bash
 flutter doctor
+
 flutter pub get
+
 flutter run
-    </div>
-  </div>
-</section>
 
-<section>
-  <h2>🏆 Hackathon Value</h2>
-  <div class="card">
-    <ul>
-      <li>Real-time robotics control</li>
-      <li>Cloud-based mission logging</li>
-      <li>AI-powered underwater analysis</li>
-      <li>Industry-grade mobile architecture</li>
-    </ul>
-  </div>
-</section>
 
-<footer>
-  © 2026 Jaltejas Underwater ROV | Hack-the-Winter | Team Nishchay
-</footer>
-
-</body>
-</html>
