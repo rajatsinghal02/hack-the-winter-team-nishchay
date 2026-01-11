@@ -22,7 +22,7 @@
       <img src="https://img.shields.io/badge/Domain-Marine_Robotics-0F4C75?style=for-the-badge&logo=ros" alt="Domain">
     </a>
     <br>
-    <img src="https://img.shields.io/badge/Status-Round_1_Prototype-success?style=for-the-badge&color=28a745" alt="Status">
+   
     <img src="https://img.shields.io/badge/Tech-Python_|_C++_|_OpenCV-blue?style=for-the-badge&logo=python&logoColor=white" alt="Tech">
     <img src="https://img.shields.io/badge/Hardware-Pi_|_Pixhawk_|_Thrusters-ff5722?style=for-the-badge&logo=raspberrypi&logoColor=white" alt="Hardware">
   </p>
